@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Executivo de Mídia</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* ===== SEÇÃO 1: HEADER E KPIs ===== */
+        .header {
+            background: #2d2d2d;
+            color: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .header-left h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .header-left p {
+            font-size: 12px;
+            color: #ccc;
+            font-style: italic;
+        }
+        .investment-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+        .investment-var {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ef4444;
+        }
+        .investment-var.positive {
+            color: #10b981;
+        }
+
+        .kpi-section {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .kpi-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+        
+        .kpi-variation {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        
+        .kpi-variation.positive {
+            color: #86efac;
+        }
+        
+        .kpi-variation.negative {
+            color: #fca5a5;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+            opacity: 0.95;
+            line-height: 1.2;
+            font-weight: 600;
+        }
+        
+        .kpi-source {
+            font-size: 10px;
+            opacity: 0.75;
+            font-style: italic;
+        }
+
+        /* ===== SEÇÃO 2: GRÁFICOS DE PIZZA ===== */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-canvas {
+            position: relative;
+            width: 100%;
+            height: 250px;
+        }
+
+        /* ===== SEÇÃO 2.5: RESULTADOS POR MARCA ===== */
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .results-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 25px;
+        }
+
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .brand-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .brand-header {
+            background: #1e40af;
+            color: white;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .brand-content {
+            padding: 20px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .metric-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .metric-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .value {
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 15px;
+        }
+
+        .value.highlight {
+            background: #fef3c7;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .variation {
+            font-weight: 600;
+            font-size: 13px;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .variation.positive {
+            color: #10b981;
+        }
+
+        .variation.negative {
+            color: #ef4444;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .meta-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .meta-label.achieved {
+            color: #10b981;
+        }
+
+        .meta-label.missed {
+            color: #ef4444;
+        }
+
+        .meta-value {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .meta-value.achieved {
+            color: #10b981;
+        }
+
+        .meta-value.missed {
+            color: #ef4444;
+        }
+
+        /* ===== SEÇÃO 3: DETALHES POR MARCA ===== */
+        .detail-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 25px;
+        }
+
+        /* FILTRO DE MARCAS */
+        .brand-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #666;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #1e40af;
+            color: #1e40af;
+        }
+
+        .filter-btn.active {
+            background: #1e40af;
+            color: white;
+            border-color: #1e40af;
+        }
+
+        /* LAYOUT DETALHES */
+        .detail-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+        }
+
+        /* PAINEL ESQUERDO */
+        .left-detail-panel {
+            background: #2d2d2d;
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .metric-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+        }
+
+        .main-metric {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .metric-variation {
+            font-size: 14px;
+            color: #86efac;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .metric-variation.negative {
+            color: #fca5a5;
+        }
+
+        .metric-subtitle {
+            font-size: 13px;
+            color: #ccc;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .insights-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .insights-text {
+            font-size: 12px;
+            line-height: 1.7;
+            color: #ddd;
+        }
+
+        .insights-text strong {
+            color: white;
+            font-weight: 600;
+        }
+
+        /* PAINEL DIREITO */
+        .right-detail-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .evolution-chart {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .evolution-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .evolution-canvas {
+            position: relative;
+            height: 250px;
+        }
+
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .channel-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .channel-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .channel-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .channel-value {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .channel-cost-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .channel-cost-value {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1e40af;
+        }
+
+        /* ===== SEÇÃO 4: INSIGHTS E RECOMENDAÇÕES ===== */
+        .insights-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .insights-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .insights-box {
+            border-left: 4px solid #10b981;
+            background: #f0fdf4;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .insights-box.recommendations {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .insights-box-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insights-box.recommendations .insights-box-title {
+            color: #d97706;
+        }
+
+        .insights-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .insights-list li {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #374151;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .insights-list li:last-child {
+            border-bottom: none;
+        }
+
+        .insights-list strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .insights-box.recommendations .insights-list li {
+            color: #451a03;
+        }
+
+        .insights-box.recommendations .insights-list strong {
+            color: #7c2d12;
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 1024px) {
+            .detail-content {
+                grid-template-columns: 1fr;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .channels-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .brands-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .channels-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .brands-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== SEÇÃO 1: HEADER E KPIs ===== -->
+        <div class="header">
+            <div class="header-left">
+                <h1>SELMI <span style="color: #1e40af;">|</span> VISÃO EXECUTIVA <span style="color: #1e40af;">|</span> Fevereiro</h1>
+                <p>% variação em relação à estimativa mensal</p>
+            </div>
+            <div class="header-right">
+                <div style="text-align: right;">
+                    <div style="font-size: 14px; color: #ccc; margin-bottom: 5px;">Investimento</div>
+                    <div class="investment-value">R$ 522.601,96</div>
+                    <div class="investment-var negative">(-5%)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kpi-section">
+            <div class="kpi-grid">
+                <!-- KPI 1: ALCANCE TOTAL -->
+                <div class="kpi-card">
+                    <div class="kpi-value">47.665.884</div>
+                    <div class="kpi-variation positive">+17%</div>
+                    <div class="kpi-label">Alcance Total</div>
+                    <div class="kpi-source">(Exclusivo Meta)</div>
+                </div>
+
+                <!-- KPI 2: TX. ENGAJAMENTO -->
+                <div class="kpi-card">
+                    <div class="kpi-value">31%</div>
+                    <div class="kpi-variation positive">+6%</div>
+                    <div class="kpi-label">Tx. Engajamento</div>
+                    <div class="kpi-source">(Exclusivo Meta)</div>
+                </div>
+
+                <!-- KPI 3: USUÁRIOS EXCLUSIVOS -->
+                <div class="kpi-card">
+                    <div class="kpi-value">37.888.355</div>
+                    <div class="kpi-variation negative">-7%</div>
+                    <div class="kpi-label">Usuários Exclusivos</div>
+                    <div class="kpi-source">(Exclusivo YouTube)</div>
+                </div>
+
+                <!-- KPI 4: TX. VISUALIZAÇÕES -->
+                <div class="kpi-card">
+                    <div class="kpi-value">70%</div>
+                    <div class="kpi-variation positive">+27%</div>
+                    <div class="kpi-label">Tx. Visualizações</div>
+                    <div class="kpi-source">(Exclusivo YouTube)</div>
+                </div>
+
+                <!-- KPI 5: HORAS ASSISTIDAS -->
+                <div class="kpi-card">
+                    <div class="kpi-value">650.644</div>
+                    <div class="kpi-variation positive">+20%</div>
+                    <div class="kpi-label">Horas Assistidas</div>
+                    <div class="kpi-source">(Todos os canais)</div>
+                </div>
+
+                <!-- KPI 6: CPM TOTAL -->
+                <div class="kpi-card">
+                    <div class="kpi-value">R$ 2,41</div>
+                    <div class="kpi-variation negative">-7%</div>
+                    <div class="kpi-label">CPM Total</div>
+                    <div class="kpi-source">(Geral)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SEÇÃO 2: GRÁFICOS DE PIZZA ===== -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-title">Investimento por Marca</div>
+                <div class="chart-canvas">
+                    <canvas id="chartInvestimento"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Alcance por Marca</div>
+                <div class="chart-canvas">
+                    <canvas id="chartAlcance"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SEÇÃO 2.5: RESULTADOS POR MARCA ===== -->
+        <div class="results-section">
+            <div class="results-title">Resultados por Marca</div>
+            
+            <div class="brands-grid">
+                <!-- RENATA -->
+                <div class="brand-card">
+                    <div class="brand-header">RENATA</div>
+                    <div class="brand-content">
+                        <div class="metric-row">
+                            <span class="metric-label">Investimento</span>
+                            <div class="metric-value">
+                                <span class="value">R$ 28.500</span>
+                                <span class="variation positive">+5%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Alcance</span>
+                            <div class="metric-value">
+                                <span class="value highlight">850K</span>
+                                <span class="variation positive">+12%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Impressões</span>
+                            <div class="metric-value">
+                                <span class="value">2.1M</span>
+                                <span class="variation negative">-3%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Engajamentos</span>
+                            <div class="metric-value">
+                                <span class="value">16.2K</span>
+                                <span class="variation positive">+8%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Video Views</span>
+                            <div class="metric-value">
+                                <span class="value">320K</span>
+                                <span class="variation positive">+15%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">CPM</span>
+                            <div class="metric-value">
+                                <span class="value">R$ 3,35</span>
+                                <span class="variation negative">-2%</span>
+                            </div>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label achieved">✓ Meta</span>
+                            <span class="meta-value achieved">Atingida +8%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GALO -->
+                <div class="brand-card">
+                    <div class="brand-header">GALO</div>
+                    <div class="brand-content">
+                        <div class="metric-row">
+                            <span class="metric-label">Investimento</span>
+                            <div class="metric-value">
+                                <span class="value">R$ 32.200</span>
+                                <span class="variation positive">+3%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Alcance</span>
+                            <div class="metric-value">
+                                <span class="value highlight">920K</span>
+                                <span class="variation positive">+18%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Impressões</span>
+                            <div class="metric-value">
+                                <span class="value">2.4M</span>
+                                <span class="variation positive">+7%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Engajamentos</span>
+                            <div class="metric-value">
+                                <span class="value">22.1K</span>
+                                <span class="variation positive">+14%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Video Views</span>
+                            <div class="metric-value">
+                                <span class="value">410K</span>
+                                <span class="variation positive">+22%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">CPM</span>
+                            <div class="metric-value">
+                                <span class="value">R$ 3,50</span>
+                                <span class="variation negative">-1%</span>
+                            </div>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label achieved">✓ Meta</span>
+                            <span class="meta-value achieved">Atingida +6%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TODESCHINI -->
+                <div class="brand-card">
+                    <div class="brand-header">TODESCHINI</div>
+                    <div class="brand-content">
+                        <div class="metric-row">
+                            <span class="metric-label">Investimento</span>
+                            <div class="metric-value">
+                                <span class="value">R$ 24.700</span>
+                                <span class="variation negative">-2%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Alcance</span>
+                            <div class="metric-value">
+                                <span class="value highlight">530K</span>
+                                <span class="variation negative">-5%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Impressões</span>
+                            <div class="metric-value">
+                                <span class="value">1.8M</span>
+                                <span class="variation negative">-8%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Engajamentos</span>
+                            <div class="metric-value">
+                                <span class="value">7.5K</span>
+                                <span class="variation negative">-4%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Video Views</span>
+                            <div class="metric-value">
+                                <span class="value">185K</span>
+                                <span class="variation negative">-6%</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">CPM</span>
+                            <div class="metric-value">
+                                <span class="value">R$ 3,70</span>
+                                <span class="variation positive">+2%</span>
+                            </div>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label missed">✗ Meta</span>
+                            <span class="meta-value missed">-4%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SEÇÃO 3: DETALHES POR MARCA ===== -->
+        <div class="detail-section">
+            <div class="section-title">Horas assistidas por Marca</div>
+            
+            <div class="brand-filter">
+                <button class="filter-btn active" onclick="changeBrand('renata', event)">RENATA</button>
+                <button class="filter-btn" onclick="changeBrand('galo', event)">GALO</button>
+                <button class="filter-btn" onclick="changeBrand('todeschini', event)">TODESCHINI</button>
+            </div>
+
+            <div class="detail-content">
+                <!-- PAINEL ESQUERDO -->
+                <div class="left-detail-panel">
+                    <div class="metric-title">Horas Assistidas</div>
+                    <div class="main-metric" id="mainMetric">225.144</div>
+                    <div class="metric-variation positive" id="metricVar">(+13% mês anterior)</div>
+                    <div class="metric-subtitle">
+                        Custo por Hora: <strong id="costPerHour">R$ 0,97</strong>
+                        <span id="costVar"> (-10%)</span>
+                    </div>
+
+                    <div class="insights-title">Análises:</div>
+                    <div class="insights-text" id="insights">
+                        • O <strong>YouTube é o nosso canal mais estratégico</strong> em relação a horas assistidas. <strong>Ele é responsável por mais de 50% do total de horas assistidas com o menor custo (R$ 1,02)</strong>.
+                    </div>
+                </div>
+
+                <!-- PAINEL DIREITO -->
+                <div class="right-detail-panel">
+                    <div class="evolution-chart">
+                        <div class="evolution-title">Evolução ao longo do ano</div>
+                        <div class="evolution-canvas">
+                            <canvas id="chartEvolution"></canvas>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 14px; font-weight: bold; color: #333; margin-bottom: 15px;">Horas e Custos por Canal</div>
+                        <div class="channels-grid">
+                            <div class="channel-card">
+                                <div class="channel-icon">∞</div>
+                                <div class="channel-name">Meta</div>
+                                <div class="channel-value" id="metaHoras">98.151 horas</div>
+                                <div class="channel-cost-label">Custo/hora</div>
+                                <div class="channel-cost-value" id="metaCost">R$ 0,99</div>
+                            </div>
+                            <div class="channel-card">
+                                <div class="channel-icon">📺</div>
+                                <div class="channel-name">YouTube</div>
+                                <div class="channel-value" id="youtubeHoras">113.522 horas</div>
+                                <div class="channel-cost-label">Custo/hora</div>
+                                <div class="channel-cost-value" id="youtubeCost">R$ 0,84</div>
+                            </div>
+                            <div class="channel-card">
+                                <div class="channel-icon">♪</div>
+                                <div class="channel-name">TikTok</div>
+                                <div class="channel-value" id="tiktokHoras">13.470 horas</div>
+                                <div class="channel-cost-label">Custo/hora</div>
+                                <div class="channel-cost-value" id="tiktokCost">R$ 1,98</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SEÇÃO 4: INSIGHTS E RECOMENDAÇÕES ===== -->
+        <div class="insights-section">
+            <div class="insights-section-title">💡 Principais Insights e Recomendações</div>
+            
+            <div class="insights-grid">
+                <!-- O QUE FUNCIONOU BEM -->
+                <div class="insights-box">
+                    <div class="insights-box-title">✓ O que funcionou bem</div>
+                    <ul class="insights-list">
+                        <li>Campanha "Do campo à mesa" no <strong>Galo com +15% de engajamento</strong> - Estratégia de receitas e produtos está gerando bom retorno</li>
+                        <li><strong>CPM em Meta reduzido em 3%</strong>, melhorando a eficiência de investimento (R$ 0,99)</li>
+                        <li><strong>Video views acumulados: 915K</strong> (acima da meta em 12%) - Criativo de 3min tem excelente performance</li>
+                        <li><strong>YouTube lidera em ROI</strong> - 50%+ das horas assistidas com menor custo (R$ 0,84)</li>
+                        <li><strong>Renata atingiu meta +8%</strong> - Marca mais consistente em conversão</li>
+                    </ul>
+                </div>
+
+                <!-- AJUSTES NECESSÁRIOS -->
+                <div class="insights-box recommendations">
+                    <div class="insights-box-title">⚠️ Ajustes necessários</div>
+                    <ul class="insights-list">
+                        <li><strong>Todeschini: aumentar investimento em Meta</strong> (melhor CPM) e reduzir YouTube por enquanto para otimizar budget</li>
+                        <li><strong>TikTok: avaliar composição de conteúdo</strong> - Custo por hora em alta (R$ 1,98), considerar ajuste de segmentação</li>
+                        <li><strong>Impressões em Renata -3%</strong> - Aumentar frequência de conteúdo ou expandir público-alvo</li>
+                        <li><strong>Concentrar video de 3min em Meta</strong> - Onde tem melhor desempenho (31% de engajamento)</li>
+                        <li><strong>Investimento total -5%</strong> - Aumentar alocação em próximo mês para maximizar crescimento</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        const brandData = {
+            renata: {
+                color: '#1e40af',
+                mainMetric: '225.144',
+                mainMetricVar: '(+13% mês anterior)',
+                costPerHour: 'R$ 0,97',
+                costVar: ' (-10%)',
+                insights: '• O <strong>YouTube é o nosso canal mais estratégico</strong> em relação a horas assistidas. <strong>Ele é responsável por mais de 50% do total de horas assistidas com o menor custo (R$ 1,02)</strong> e é no YouTube que temos a maior média de tempo assistido por reprodução.',
+                channels: {
+                    meta: { horas: '98.151 horas', cost: 'R$ 0,99' },
+                    youtube: { horas: '113.522 horas', cost: 'R$ 0,84' },
+                    tiktok: { horas: '13.470 horas', cost: 'R$ 1,98' }
+                },
+                chartData: {
+                    months: ['jan/25', 'fev/25', 'mar/25', 'abr/25', 'mai/25', 'jun/25', 'jul/25', 'ago/25', 'set/25', 'out/25', 'nov/25', 'dez/25', 'jan/26', 'fev/26'],
+                    meta: [45000, 55000, 48000, 52000, 58000, 62000, 65000, 60000, 58000, 68000, 72000, 78000, 85000, 98151],
+                    youtube: [85000, 95000, 88000, 92000, 98000, 105000, 110000, 108000, 105000, 118000, 125000, 135000, 140000, 113522],
+                    tiktok: [15000, 8000, 12000, 10000, 11000, 9000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 13470]
+                }
+            },
+            galo: {
+                color: '#fbbf24',
+                mainMetric: '198.750',
+                mainMetricVar: '(+8% mês anterior)',
+                costPerHour: 'R$ 1,05',
+                costVar: ' (-5%)',
+                insights: '• <strong>Meta lidera em volume de horas</strong> para Galo, representando 48% do total. A estratégia de <strong>conteúdo de receitas funciona bem nessa plataforma</strong>, mantendo um custo competitivo de R$ 0,95.',
+                channels: {
+                    meta: { horas: '95.500 horas', cost: 'R$ 0,95' },
+                    youtube: { horas: '89.200 horas', cost: 'R$ 1,15' },
+                    tiktok: { horas: '14.050 horas', cost: 'R$ 2,10' }
+                },
+                chartData: {
+                    months: ['jan/25', 'fev/25', 'mar/25', 'abr/25', 'mai/25', 'jun/25', 'jul/25', 'ago/25', 'set/25', 'out/25', 'nov/25', 'dez/25', 'jan/26', 'fev/26'],
+                    meta: [42000, 50000, 45000, 48000, 52000, 58000, 60000, 55000, 52000, 62000, 68000, 72000, 78000, 95500],
+                    youtube: [78000, 88000, 82000, 85000, 90000, 95000, 98000, 92000, 88000, 100000, 108000, 118000, 125000, 89200],
+                    tiktok: [12000, 7000, 10000, 9000, 10000, 8000, 7000, 9000, 11000, 13000, 15000, 17000, 18000, 14050]
+                }
+            },
+            todeschini: {
+                color: '#ef4444',
+                mainMetric: '168.420',
+                mainMetricVar: '(-2% mês anterior)',
+                costPerHour: 'R$ 0,88',
+                costVar: ' (+3%)',
+                insights: '• <strong>YouTube continua sendo estratégico</strong>, responsável por 54% das horas assistidas. A marca tem o <strong>melhor custo por hora entre as três (R$ 0,88)</strong>, indicando eficiência.',
+                channels: {
+                    meta: { horas: '72.800 horas', cost: 'R$ 0,92' },
+                    youtube: { horas: '91.200 horas', cost: 'R$ 0,78' },
+                    tiktok: { horas: '4.420 horas', cost: 'R$ 2,45' }
+                },
+                chartData: {
+                    months: ['jan/25', 'fev/25', 'mar/25', 'abr/25', 'mai/25', 'jun/25', 'jul/25', 'ago/25', 'set/25', 'out/25', 'nov/25', 'dez/25', 'jan/26', 'fev/26'],
+                    meta: [38000, 42000, 40000, 43000, 46000, 50000, 52000, 48000, 45000, 55000, 60000, 65000, 70000, 72800],
+                    youtube: [72000, 80000, 78000, 82000, 88000, 92000, 95000, 90000, 85000, 105000, 115000, 125000, 130000, 91200],
+                    tiktok: [8000, 4000, 6000, 5000, 6000, 5000, 4000, 6000, 8000, 10000, 12000, 14000, 15000, 4420]
+                }
+            }
+        };
+
+        let currentBrand = 'renata';
+        let evolutionChart = null;
+        let piePieChart1 = null;
+        let piePieChart2 = null;
+
+        function changeBrand(brand, event) {
+            currentBrand = brand;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateBrandData();
+        }
+
+        function updateBrandData() {
+            const data = brandData[currentBrand];
+            
+            document.getElementById('mainMetric').textContent = data.mainMetric;
+            document.getElementById('metricVar').textContent = data.mainMetricVar;
+            document.getElementById('costPerHour').textContent = data.costPerHour;
+            document.getElementById('costVar').textContent = data.costVar;
+            document.getElementById('insights').innerHTML = data.insights;
+
+            document.getElementById('metaHoras').textContent = data.channels.meta.horas;
+            document.getElementById('metaCost').textContent = data.channels.meta.cost;
+            document.getElementById('youtubeHoras').textContent = data.channels.youtube.horas;
+            document.getElementById('youtubeCost').textContent = data.channels.youtube.cost;
+            document.getElementById('tiktokHoras').textContent = data.channels.tiktok.horas;
+            document.getElementById('tiktokCost').textContent = data.channels.tiktok.cost;
+
+            updateEvolutionChart(data.chartData);
+        }
+
+        function updateEvolutionChart(chartData) {
+            const ctx = document.getElementById('chartEvolution').getContext('2d');
+            
+            if (evolutionChart) {
+                evolutionChart.destroy();
+            }
+
+            evolutionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.months,
+                    datasets: [
+                        {
+                            label: 'TikTok',
+                            data: chartData.tiktok,
+                            backgroundColor: '#000000',
+                            stack: 'Stack 0'
+                        },
+                        {
+                            label: 'Meta',
+                            data: chartData.meta,
+                            backgroundColor: '#3b82f6',
+                            stack: 'Stack 0'
+                        },
+                        {
+                            label: 'YouTube',
+                            data: chartData.youtube,
+                            backgroundColor: '#ef4444',
+                            stack: 'Stack 0'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 11 }, padding: 10 }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true, ticks: { font: { size: 10 } } },
+                        y: { stacked: true, ticks: { callback: (v) => (v/1000).toFixed(0) + 'k' } }
+                    }
+                }
+            });
+        }
+
+        function createPieCharts() {
+            const colors = { renata: '#1e40af', galo: '#fbbf24', todesc: '#ef4444', selmi: '#8b5cf6' };
+
+            const ctx1 = document.getElementById('chartInvestimento').getContext('2d');
+            piePieChart1 = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Renata', 'Galo', 'Todesc', 'Selmi'],
+                    datasets: [{
+                        data: [45.3, 31.2, 22.6, 0.8],
+                        backgroundColor: [colors.renata, colors.galo, colors.todesc, colors.selmi],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'left', labels: { font: { size: 12 }, padding: 15 } }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('chartAlcance').getContext('2d');
+            piePieChart2 = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Renata', 'Galo', 'Todesc'],
+                    datasets: [{
+                        data: [39.1, 37.1, 23.9],
+                        backgroundColor: [colors.renata, colors.galo, colors.todesc],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'left', labels: { font: { size: 12 }, padding: 15 } }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            createPieCharts();
+            updateBrandData();
+        });
+    </script>
+</body>
+</html>
